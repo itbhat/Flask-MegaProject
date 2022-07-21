@@ -1,5 +1,5 @@
 from app import app,db,file_upload
-from app.forms import LoginForm, RegistrationForm, EditProfileForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm
 from flask import render_template,flash, redirect, url_for, request,abort
 from flask_login import current_user,login_user, logout_user,login_required
 from app.models import User
@@ -101,7 +101,8 @@ def user(username):
 {'author': user, 'body':'Test post #1'},
 {'author':user, 'body': 'Test post #2'}
   ]
-  return render_template('user.html',user = user,posts = posts)
+  form = EmptyForm()
+  return render_template('user.html',user = user,posts = posts, form=form)
 
 @app.before_request
 def before_request():

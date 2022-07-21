@@ -1,4 +1,4 @@
-from app import db,login,file_upload
+from app import db,login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from hashlib import md5
@@ -48,9 +48,11 @@ class User(UserMixin, db.Model):
         return self.followed.filter(followers.c.follower_id == user.id).count() > 0
 
     def followed_posts(self):
-        return Post.query.join(
-            followers, (followers.c.followed_id == Post.user_id)
-        ).filter(followers.c.follower_id == self.id).order_by(Post.timestamp.desc())
+        followed = Post.query.join(
+            followers, (followers.c.followed_id == Post.user_id).filter(
+                followers.c.follower_id == self.id))
+        own = Post.query.filter_by(user_id=self.id)
+        return followed.union(own).order_by(Post.timestamp.desc())
 
 @login.user_loader
 def load_user(id):
