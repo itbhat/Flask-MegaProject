@@ -2,8 +2,25 @@
 
 {% block content %}
 <h1> Hi, {{current_user.username }}!</h1>
-<form method='POST' action='/upload' enctype='multipart/form-data'>
-    <input type="file" id="db" name="file">
-    <input type="submit" value="Upload Dataset">
-</form>
+{% if form %}
+<form method='POST' action=''>
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.post.label }} <br>
+        {{ form.post(cols=32, rows=4) }}<br>
+        % for error in form.post.errors %
+        <span style="color: red;">[{{ error }}]</span>
+        % endfor %
+    </p>
+    <p> {{ form.submit() }}</p>
+    </form>
+    {% endif %}
+    % for post in posts %
+    <p>
+        {{ post.author.username }} says: <b> {{ post.body }}</b>
+    </p>
+    % endfor %
+    % for post in posts %
+        % include '_post.html' %
+    % endfor %
 {% endblock %}
