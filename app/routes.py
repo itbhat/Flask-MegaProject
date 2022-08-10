@@ -21,7 +21,7 @@ def index():
     flash('Your post is now live!')
     return redirect(url_for('index'))
   page= request.args.get('page', 1, type=int)
-  posts = current_user.followed_posts().all()
+  posts = current_user.followed_posts().paginate(1, 20, False).items
   #posts = [
   #  {
   #    'author': {'username': 'John'},
@@ -32,7 +32,7 @@ def index():
   #    'body': 'The Avengers movie was so cool!'
   #  }
   #]
-  return render_template("index.html", title='Home Page', form=form, posts=posts)
+  return render_template("index.html", title='Home Page', form=form, posts=posts.items)
 
 @app.route('/login',methods = ['GET', 'POST'])
 def login():
@@ -174,8 +174,10 @@ def unfollow(username):
 @app.route('/explore')
 @login_required
 def explore():
-  posts = Post.query.order_by(Post.timestamp.desc()).all()
-  return render_template('index.html', title='Explore', posts=posts)
+  page = request.args.get('page', 1, type=int)
+  posts = Post.query.order_by(Post.timestamp.desc()).paginate(
+    page, app.config['POSTS_PER_PAGE'], False)
+  return render_template('index.html', title='Explore', posts=posts.items)
 
 
 
